@@ -1,5 +1,6 @@
-import pandas as pd
 import os
+import json
+import pandas as pd
 import pickle
 from flask import Flask, request, Response
 from healthinsurance.HealthInsurance import HealthInsurance
@@ -10,7 +11,7 @@ model = pickle.load( open( 'models/model_lr.pkl', 'rb' ))
 # Initialize API
 app = Flask( __name__ )
 
-@app.route( '/health', methods= ['POST'] )
+@app.route( '/predict', methods= ['POST'] )
 def health_insurance_predict():
     test_json = request.get_json()
     
@@ -19,7 +20,7 @@ def health_insurance_predict():
             test_raw = pd.DataFrame( test_json, index=[0] )
         
         else:
-             test_raw = pd.DataFrame( test_json, columns= test_json[0].keys() )
+            test_raw = pd.DataFrame( test_json, columns= test_json[0].keys() )
         
         # Instantiate HealthInsurance class
         pipeline = HealthInsurance()

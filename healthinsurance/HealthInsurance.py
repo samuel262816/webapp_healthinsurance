@@ -1,16 +1,25 @@
 import pickle
 import pandas as pd
 import numpy as np
-
+from sklearn.preprocessing  import StandardScaler, MinMaxScaler
 
 class HealthInsurance():
     def __init__( self ):    
-        self.annual_premium_scaler            = pickle.load( open( '/src/parameter/annual_premium_scaler.pkl', 'rb') )
-        self.age_scaler                       = pickle.load( open( '/src/parameter/age_scaler.pkl', 'rb') )
-        self.vintage_scaler                   = pickle.load( open( '/src/parameter/vintage_scaler.pkl', 'rb') )
+        self.annual_premium_scaler = pickle.load( open( '/src/parameter/annual_premium_scaler.pkl', 'rb') )
+        self.age_scaler            = pickle.load( open( '/src/parameter/age_scaler.pkl', 'rb') )
+        self.vintage_scaler        = pickle.load( open( '/src/parameter/vintage_scaler.pkl', 'rb') )
         self.target_encode_region_code_scaler = pickle.load( open( '/src/parameter/target_encode_region_code_scaler.pkl', 'rb'))
         self.target_encode_gender_scaler      = pickle.load( open( '/src/parameter\target_encode_gender_scaler.pkl', 'rb'))
         self.fe_policy_sales_channel_scaler   = pickle.load( open( '/src/parameter/fe_policy_sales_channel_scaler.pkl', 'rb'))
+        
+        
+    def data_cleaning( self, df1 ):
+        new_cols = ['id', 'gender', 'age', 'region_code', 'policy_sales_channel', 'driving_license', 'vehicle_age', 
+                    'vehicle_damage', 'previously_insured', 'annual_premium', 'vintage', 'response']
+        
+        df1.columns = new_cols
+        
+        return df1
         
         
     def feature_engineering( self, df2 ):
