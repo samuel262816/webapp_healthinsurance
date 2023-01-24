@@ -1,16 +1,18 @@
 import pickle
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing  import StandardScaler, MinMaxScaler
+# from sklearn.preprocessing  import StandardScaler, MinMaxScaler
 
 class HealthInsurance():
-    def __init__( self ):    
-        self.annual_premium_scaler = pickle.load( open( '/src/parameter/annual_premium_scaler.pkl', 'rb') )
-        self.age_scaler            = pickle.load( open( '/src/parameter/age_scaler.pkl', 'rb') )
-        self.vintage_scaler        = pickle.load( open( '/src/parameter/vintage_scaler.pkl', 'rb') )
-        self.target_encode_region_code_scaler = pickle.load( open( '/src/parameter/target_encode_region_code_scaler.pkl', 'rb'))
-        self.target_encode_gender_scaler      = pickle.load( open( '/src/parameter\target_encode_gender_scaler.pkl', 'rb'))
-        self.fe_policy_sales_channel_scaler   = pickle.load( open( '/src/parameter/fe_policy_sales_channel_scaler.pkl', 'rb'))
+    
+    def __init__( self ):
+
+        self.annual_premium_scaler            = pickle.load( open( 'parameter/annual_premium_scaler.pkl', 'rb') )
+        self.age_scaler                       = pickle.load( open( 'parameter/age_scaler.pkl', 'rb') )
+        self.vintage_scaler                   = pickle.load( open( 'parameter/vintage_scaler.pkl', 'rb') )
+        self.target_encode_region_code_scaler = pickle.load( open( 'parameter/target_encode_region_code_scaler.pkl', 'rb'))
+        self.target_encode_gender_scaler      = pickle.load( open( 'parameter/target_encode_gender_scaler.pkl', 'rb'))
+        self.fe_policy_sales_channel_scaler   = pickle.load( open( 'parameter/fe_policy_sales_channel_scaler.pkl', 'rb'))
         
         
     def data_cleaning( self, df1 ):
@@ -44,18 +46,19 @@ class HealthInsurance():
         df5['vintage'] = self.vintage_scaler.transform( df5[['vintage']].values )
         
         ### 5.3. Encoding
+        # gender - target encoding
+        df5.loc[: , 'gender'] = df5['gender'].map( self.target_encode_gender_scaler )
+        
         # region_code - target encoding
         df5.loc[:, 'region_code'] = df5['region_code'].map( self.target_encode_region_code_scaler )
 
         # vehicle_age - one hot encoding
-        df5 = pd.get_dummies( df5, prefix= 'vehicle_age', columns=['vehicle_age'] )
-
-        # gender - target encoding
-        df5.loc[: , 'gender'] = df5['gender'].map( self.target_encode_gender_scaler )
+        df5 = pd.get_dummies( df5, prefix= 'vehicle_age', columns=['vehicle_age'] )       
 
         # policy_sales_channel - frequency encoding
         df5.loc[:, 'policy_sales_channel'] = df5['policy_sales_channel'].map( self.fe_policy_sales_channel_scaler )
 
+        # features selections
         cols_selected = [ 'vintage', 'annual_premium', 'age', 'region_code', 'vehicle_damage', 'policy_sales_channel', 'previously_insured' ]
         
         return df5[ cols_selected ]
